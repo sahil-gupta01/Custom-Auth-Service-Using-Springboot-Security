@@ -79,11 +79,11 @@ public class AuthService {
         return userResponseDto;
     }
 
-    public SessionStatus validateToken(String token, Long userId) {
+    public Optional<UserResponseDto> validateToken(String token, Long userId) {
         Optional<Session> optionalSession = sessionRepository.findByTokenAndUser_Id(token, userId);
 
         if (optionalSession.isEmpty()) {
-            return SessionStatus.INVALID;
+            return Optional.empty();
         }
 
         Session session = optionalSession.get();
@@ -93,9 +93,13 @@ public class AuthService {
 //        }
 
         if(!SessionStatus.ACTIVE.equals(session.getSessionStatus())){
-            return SessionStatus.EXPIRED;
+            return Optional.empty();
         }
-        return SessionStatus.ACTIVE;
+
+        User user = userRepository.findById(userId).get();
+        UserResponseDto userResponseDto = UserResponseDto.from(user);
+
+        return Optional.of(userResponseDto);
     }
 
     public ResponseEntity<Void> logout(String token, Long userId){
@@ -111,4 +115,5 @@ public class AuthService {
         sessionRepository.save(session);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 }
