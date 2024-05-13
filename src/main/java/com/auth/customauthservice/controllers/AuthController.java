@@ -54,4 +54,5 @@ public class AuthController {
     public ResponseEntity<Void> logout(@RequestBody ValidateTokenRequestDto validateTokenRequestDto){
         return authService.logout(validateTokenRequestDto.getToken(), validateTokenRequestDto.getUserId());
     }
+
 }
